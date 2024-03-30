@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validador de CPF e Identificador</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-group">
+    <label for="cpf">Digite seu CPF:</label>
+    <input type="text" id="cpf" placeholder="000.000.000-00">
+</div>
+<div class="form-group">
+    <label for="identificador">Digite seu Identificador Único:</label>
+    <input type="text" id="identificador" placeholder="Identificador Único">
+</div>
+<button onclick="enviarDados()">Enviar</button>
+
+<script>
+    function enviarDados() {
+        var cpf = document.getElementById('cpf').value;
+        var identificador = document.getElementById('identificador').value;
+        
+        if (cpf) {
+            // Substitua 'http://localhost:5000' pelo seu endereço da API Flask, se necessário
+            fetch('http://localhost:5000/buscar_cpf?cpf=' + cpf)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.identificador) {
+                        alert("Identificador encontrado: " + data.identificador);
+                    } else {
+                        alert("CPF não encontrado.");
+                    }
+                })
+                .catch((error) => {
+                    console.error('Erro:', error);
+                });
+        } else if (identificador) {
+            // Substitua 'http://localhost:5000' pelo seu endereço da API Flask, se necessário
+            fetch('http://localhost:5000/validar_identificador?identificador=' + identificador)
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.mensagem);
+                })
+                .catch((error) => {
+                    console.error('Erro:', error);
+                });
+        } else {
+            alert('Por favor, insira o CPF ou o Identificador.');
+        }
+    }
+</script>
+
+</body>
+</html>

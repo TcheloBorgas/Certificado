@@ -1,0 +1,6 @@
+Data/
+│
+├── __init__.py
+├── excel_handler.py     # Para lidar com operações de leitura e escrita do Excel.
+├── identifier.py        # Para gerar e validar identificadores únicos.
+└── validator.py         # Para validar identificadores contra os dados do Excel.
