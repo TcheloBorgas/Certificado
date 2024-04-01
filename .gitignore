@@ -1,0 +1,30 @@
+# Ambiente virtual
+venv/
+.env
+.env.local
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Arquivos Excel (remova essa linha se você deseja incluir arquivos Excel no seu repositório)
+*.xlsx
+
+# Configurações da IDE
+.vscode/
+.idea/
+
+# Arquivos de log (ajuste conforme necessário)
+*.log
+
+# Arquivos de configuração sensíveis
+config.py
+secret.py
+
+# Dados sensíveis ou arquivos de configuração específicos
+*.pem
+*.key
+
+# Arquivos de banco de dados SQLite (se estiver usando)
+*.sqlite3
+*.db
