@@ -4,7 +4,7 @@ import string
 def generate_unique_identifier(existing_ids):
     # Gera um identificador único.
     while True:
-        identifier = ''.join(random.choices(string.ascii_letters + string.digits, k=20))
+        identifier = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
         if identifier not in existing_ids:
             return identifier
 

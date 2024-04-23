@@ -20,7 +20,7 @@
             display: block;
             margin-bottom: 5px;
         }
-        input[type="text"] {
+        input[type="text"], input[type="file"] {
             padding: 10px;
             width: 300px;
             border: 1px solid #ccc;
@@ -51,7 +51,14 @@
 </div>
 <button onclick="enviarDados()">Enviar</button>
 
-<div id="resultado">Aqui aparecerá o resultado da busca.</div>
+<!-- Novo Formulário para Upload de Arquivo -->
+<div class="form-group">
+    <label for="file">Upload de Arquivo XLSX:</label>
+    <input type="file" id="file" name="file" accept=".xlsx">
+</div>
+<button onclick="uploadFile()">Upload e Atualização</button>
+
+<div id="resultado">Aqui aparecerá o resultado da busca ou do upload.</div>
 
 <script>
     function enviarDados() {
@@ -89,8 +96,30 @@
                 }
             })
             .catch(error => {
-                document.getElementById('resultado').textContent = error;
+                document.getElementById('resultado').textContent = error.message;
             });
+    }
+
+    function uploadFile() {
+        const formData = new FormData();
+        const fileInput = document.getElementById('file');
+        if (fileInput.files.length > 0) {
+            formData.append('file', fileInput.files[0]);
+
+            fetch('http://localhost:5000/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('resultado').textContent = data.mensagem;
+            })
+            .catch(error => {
+                document.getElementById('resultado').textContent = 'Erro no upload do arquivo: ' + error.message;
+            });
+        } else {
+            alert('Por favor, selecione um arquivo para enviar.');
+        }
     }
 </script>
 

@@ -5,6 +5,8 @@ import os
 import sys
 sys.path.insert(0, 'c:\\Users\\pytho\\Documents\\GitHub\\Certificado')
 
+from werkzeug.utils import secure_filename
+
 
 # Importando as funções dos módulos Data
 from Data.excel_handler import read_excel, write_excel
@@ -12,6 +14,7 @@ from Data.identifier import add_identifiers_to_data
 from Data.validator import validate_certificate
 from Data.excel_handler import read_excel, write_excel
 from Data.identifier import add_identifiers_to_data
+from Data.extXLSX import append_and_overwrite_excel, update_database_with_new_file
 
 EXCEL_FILE_PATH = r'C:\Users\pytho\Documents\GitHub\Certificado\usuarios.xlsx'
 dataframe = read_excel(EXCEL_FILE_PATH)
@@ -34,6 +37,46 @@ dataframe = read_excel(EXCEL_FILE_PATH)
 @app.route('/')
 def home():
     return render_template('index.html')
+
+
+
+
+
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({"mensagem": "Nenhum arquivo foi enviado."}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"mensagem": "Nenhum arquivo selecionado para upload."}), 400
+
+    if file and file.filename.endswith('.xlsx'):
+        # Define um caminho seguro para salvar o arquivo
+        directory = os.path.join(os.getcwd(), 'uploads')  # Usa a pasta 'uploads' no diretório atual
+        if not os.path.exists(directory):
+            os.makedirs(directory)  # Cria o diretório se não existir
+
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(directory, filename)
+        file.save(filepath)
+        
+        # Atualiza a base de dados
+        try:
+            update_database_with_new_file(filepath)
+            return jsonify({"mensagem": "Arquivo recebido e base de dados atualizada."}), 200
+        except Exception as e:
+            return jsonify({"mensagem": str(e)}), 500
+    else:
+        return jsonify({"mensagem": "Formato de arquivo inválido. Por favor, envie um arquivo .xlsx."}), 400
+
+
+
+
+
+
+
 
 
 @app.route('/buscar_cpf', methods=['GET'])
