@@ -16,6 +16,9 @@ from Data.excel_handler import read_excel, write_excel
 from Data.identifier import add_identifiers_to_data
 from Data.extXLSX import append_and_overwrite_excel, update_database_with_new_file
 
+
+
+
 EXCEL_FILE_PATH = r'C:\Users\pytho\Documents\GitHub\Certificado\usuarios.xlsx'
 dataframe = read_excel(EXCEL_FILE_PATH)
 dataframe = add_identifiers_to_data(dataframe)

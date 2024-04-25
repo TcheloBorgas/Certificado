@@ -1,127 +1,88 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Busca de CPF e Identificador</title>
+    <title>API Orquestradora</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
         }
-        .form-group {
-            margin-bottom: 15px;
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding-top: 20px;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input[type="text"], input[type="file"] {
+        input, button {
+            margin: 10px 0;
             padding: 10px;
-            width: 300px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
         }
         button {
-            padding: 10px 20px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
             cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>API Orquestradora</h1>
+        
+        <!-- Concatenar Arquivos -->
+        <h2>Concatenar Arquivos</h2>
+        <form id="uploadForm">
+            <input type="file" id="novoArquivo" accept=".xlsx">
+            <button type="button" onclick="concatenarArquivos()">Upload e Concatenar</button>
+        </form>
+        <p id="resultadoConcatenacao"></p>
 
-<div class="form-group">
-    <label for="cpf">Digite seu CPF:</label>
-    <input type="text" id="cpf" placeholder="000.000.000-00">
-</div>
-<div class="form-group">
-    <label for="identificador">Ou digite seu Identificador Único:</label>
-    <input type="text" id="identificador" placeholder="Identificador Único">
-</div>
-<button onclick="enviarDados()">Enviar</button>
+        <!-- Gerar Hash CPF -->
+        <h2>Gerar Hash de CPF</h2>
+        <input type="text" id="cpf" placeholder="Digite o CPF">
+        <button onclick="gerarHash()">Gerar Hash</button>
+        <p id="resultadoHash"></p>
 
-<!-- Novo Formulário para Upload de Arquivo -->
-<div class="form-group">
-    <label for="file">Upload de Arquivo XLSX:</label>
-    <input type="file" id="file" name="file" accept=".xlsx">
-</div>
-<button onclick="uploadFile()">Upload e Atualização</button>
+        <!-- Validar Identificador -->
+        <h2>Validar Identificador</h2>
+        <input type="text" id="identificador" placeholder="Digite o Identificador">
+        <button onclick="validarIdentificador()">Validar</button>
+        <p id="resultadoValidacao"></p>
+    </div>
 
-<div id="resultado">Aqui aparecerá o resultado da busca ou do upload.</div>
+    <script>
+        function concatenarArquivos() {
+            const formData = new FormData();
+            const novoArquivo = document.getElementById('novoArquivo').files[0];
+            formData.append('novo_arquivo', novoArquivo);
 
-<script>
-    function enviarDados() {
-        const cpf = document.getElementById('cpf').value;
-        const identificador = document.getElementById('identificador').value;
-
-        let url = '';
-        let message = '';
-
-        if (cpf) {
-            url = `http://localhost:5000/buscar_cpf?cpf=${cpf}`;
-            message = 'CPF não encontrado ou erro na requisição.';
-        } else if (identificador) {
-            url = `http://localhost:5000/validar_identificador?identificador=${identificador}`;
-            message = 'Identificador não encontrado ou erro na requisição.';
-        } else {
-            alert('Por favor, insira um CPF ou um Identificador Único.');
-            return;
-        }
-
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(message);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (cpf && data.identificador) {
-                    document.getElementById('resultado').textContent = `Identificador: ${data.identificador}`;
-                } else if (identificador && data.mensagem) {
-                    document.getElementById('resultado').textContent = `Mensagem: ${data.mensagem}`;
-                } else {
-                    document.getElementById('resultado').textContent = message;
-                }
-            })
-            .catch(error => {
-                document.getElementById('resultado').textContent = error.message;
-            });
-    }
-
-    function uploadFile() {
-        const formData = new FormData();
-        const fileInput = document.getElementById('file');
-        if (fileInput.files.length > 0) {
-            formData.append('file', fileInput.files[0]);
-
-            fetch('http://localhost:5000/upload', {
+            fetch('/concatenar', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('resultado').textContent = data.mensagem;
+                document.getElementById('resultadoConcatenacao').innerText = data.mensagem || data.error;
             })
-            .catch(error => {
-                document.getElementById('resultado').textContent = 'Erro no upload do arquivo: ' + error.message;
-            });
-        } else {
-            alert('Por favor, selecione um arquivo para enviar.');
+            .catch(error => console.error('Error:', error));
         }
-    }
-</script>
 
+        function gerarHash() {
+            const cpf = document.getElementById('cpf').value;
+
+            fetch(`/hash?cpf=${cpf}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('resultadoHash').innerText = `CPF: ${data.cpf}, Hash: ${data.hash}` || data.error;
+            });
+        }
+
+        function validarIdentificador() {
+            const identificador = document.getElementById('identificador').value;
+
+            fetch(`/validar?identificador=${identificador}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('resultadoValidacao').innerText = `${data.mensagem}, CPF: ${data.cpf || 'N/A'}` || data.error;
+            });
+        }
+    </script>
 </body>
 </html>
