@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,24 +9,29 @@
         body {
             font-family: Arial, sans-serif;
         }
+
         .container {
             width: 80%;
             margin: 0 auto;
             padding-top: 20px;
         }
-        input, button {
+
+        input,
+        button {
             margin: 10px 0;
             padding: 10px;
         }
+
         button {
             cursor: pointer;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>API Orquestradora</h1>
-        
+
         <!-- Concatenar Arquivos -->
         <h2>Concatenar Arquivos</h2>
         <form id="uploadForm">
@@ -57,32 +63,43 @@
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('resultadoConcatenacao').innerText = data.mensagem || data.error;
-            })
-            .catch(error => console.error('Error:', error));
+                .then(response => response.json())
+                .then(data => {
+                    // Verificando se a resposta contém o campo 'message'
+                    if (data.message) {
+                        document.getElementById('resultadoConcatenacao').innerText = data.message;
+                    } else {
+                        // Se não tiver 'message', pode ser que tenha 'error'
+                        document.getElementById('resultadoConcatenacao').innerText = data.error || 'Erro desconhecido';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('resultadoConcatenacao').innerText = 'Falha na comunicação com o servidor';
+                });
         }
+
 
         function gerarHash() {
             const cpf = document.getElementById('cpf').value;
 
             fetch(`/hash?cpf=${cpf}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('resultadoHash').innerText = `CPF: ${data.cpf}, Hash: ${data.hash}` || data.error;
-            });
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('resultadoHash').innerText = `CPF: ${data.cpf}, Hash: ${data.hash}` || data.error;
+                });
         }
 
         function validarIdentificador() {
             const identificador = document.getElementById('identificador').value;
 
             fetch(`/validar?identificador=${identificador}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('resultadoValidacao').innerText = `${data.mensagem}, CPF: ${data.cpf || 'N/A'}` || data.error;
-            });
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('resultadoValidacao').innerText = `${data.mensagem}, CPF: ${data.cpf || 'N/A'}` || data.error;
+                });
         }
     </script>
 </body>
+
 </html>

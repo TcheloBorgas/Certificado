@@ -33,8 +33,16 @@ def upload_concatenar():
         novo_arquivo.save(novo_arquivo_path)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
-    return jsonify({'message': 'Arquivo salvo com sucesso!'}), 200
+
+    # Supondo que você tem um arquivo existente com o qual você quer concatenar
+    arquivo_existente = os.path.join(pasta_uploads, 'usuarios.xlsx')
+
+    # Chamando a função para concatenar e atualizar identificadores
+    try:
+        arquivo_saida = concatenar_arquivos_e_atualizar_identificadores(arquivo_existente, novo_arquivo_path)
+        return jsonify({'message': 'Arquivos concatenados com sucesso!', 'arquivo': arquivo_saida}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/hash', methods=['GET'])
