@@ -1,10 +1,29 @@
+import pandas as pd
 from flask import Flask, request, jsonify, render_template
 from werkzeug.utils import secure_filename
 import os
-from concat2 import concatenar_arquivos_e_atualizar_identificadores  # Certifique-se de ter a função correta importada
-from has import gerar_identificador  # Importar a função de hash
-from validacao import validate_certificate  # Importar função de validação, se aplicável
+from concat2 import concatenar_arquivos_e_atualizar_identificadores
+from has import gerar_identificador  
+from validacao import validate_certificate  
 from flask_cors import CORS
+
+
+
+
+
+def is_library_installed(library_name):
+    try:
+        # Tenta importar a biblioteca
+        __import__(library_name)
+        print(f"A biblioteca '{library_name}' está instalada.")
+        return True
+    except ImportError:
+        # Se ocorrer um erro de importação, a biblioteca não está instalada
+        print(f"A biblioteca '{library_name}' não está instalada.")
+        return False
+
+# Exemplo de uso
+is_library_installed('openpyxl')  # Substitua 'numpy' pelo nome da biblioteca que deseja verificar
 
 
 app = Flask(__name__,template_folder=r'C:\Users\pytho\Documents\GitHub\Certificado\Frontend')
@@ -57,18 +76,35 @@ def hash_cpf():
     except Exception as e:
         return jsonify({'error': 'Erro ao gerar hash', 'detalhe': str(e)}), 500
 
+
+
 @app.route('/validar', methods=['GET'])
 def validar():
-    identificador = request.args.get('identificador')
+    identificador = request.args.get('Identificador')
     if not identificador:
         return jsonify({'error': 'Identificador não especificado'}), 400
     
     try:
-        dataframe = pd.read_excel('usuarios.xlsx')
-        resultado, cpf = validate_certificate(identificador, dataframe)
-        return jsonify({'mensagem': resultado, 'cpf': cpf})
+        # Usar um caminho absoluto ou correto para o arquivo Excel
+        base_dir = os.path.dirname(__file__)  # Obter o diretório onde o script está executando
+        file_path = r'C:\Users\pytho\Documents\GitHub\Certificado\Test\uploads\usuarios.xlsx'
+        
+        # Garantir que o arquivo existe
+        if not os.path.exists(file_path):
+            return jsonify({'error': 'Arquivo não encontrado'}), 404
+        
+        dataframe = pd.read_excel(file_path)
+        resultado, cpf, nome = validate_certificate(identificador, dataframe)
+        return jsonify({'mensagem': resultado, 'cpf': cpf, 'nome': nome})
+    
+    
     except Exception as e:
-        return jsonify({'error': 'Erro ao validar identificador', 'detalhe': str(e)}), 500
+        return jsonify({'error': f'Erro ao validar identificador {str(e)}', 'detalhe': str(e)}), 500
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

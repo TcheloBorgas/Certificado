@@ -31,7 +31,6 @@
 <body>
     <div class="container">
         <h1>API Orquestradora</h1>
-
         <!-- Concatenar Arquivos -->
         <h2>Concatenar Arquivos</h2>
         <form id="uploadForm">
@@ -40,15 +39,9 @@
         </form>
         <p id="resultadoConcatenacao"></p>
 
-        <!-- Gerar Hash CPF -->
-        <h2>Gerar Hash de CPF</h2>
-        <input type="text" id="cpf" placeholder="Digite o CPF">
-        <button onclick="gerarHash()">Gerar Hash</button>
-        <p id="resultadoHash"></p>
-
         <!-- Validar Identificador -->
         <h2>Validar Identificador</h2>
-        <input type="text" id="identificador" placeholder="Digite o Identificador">
+        <input type="text" id="Identificador" placeholder="Digite o Identificador">
         <button onclick="validarIdentificador()">Validar</button>
         <p id="resultadoValidacao"></p>
     </div>
@@ -58,20 +51,10 @@
             const formData = new FormData();
             const novoArquivo = document.getElementById('novoArquivo').files[0];
             formData.append('novo_arquivo', novoArquivo);
-
-            fetch('/concatenar', {
-                method: 'POST',
-                body: formData
-            })
+            fetch('/concatenar', { method: 'POST', body: formData })
                 .then(response => response.json())
                 .then(data => {
-                    // Verificando se a resposta contém o campo 'message'
-                    if (data.message) {
-                        document.getElementById('resultadoConcatenacao').innerText = data.message;
-                    } else {
-                        // Se não tiver 'message', pode ser que tenha 'error'
-                        document.getElementById('resultadoConcatenacao').innerText = data.error || 'Erro desconhecido';
-                    }
+                    document.getElementById('resultadoConcatenacao').innerText = data.message || data.error || 'Erro desconhecido';
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -79,26 +62,24 @@
                 });
         }
 
-
-        function gerarHash() {
-            const cpf = document.getElementById('cpf').value;
-
-            fetch(`/hash?cpf=${cpf}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('resultadoHash').innerText = `CPF: ${data.cpf}, Hash: ${data.hash}` || data.error;
-                });
-        }
-
         function validarIdentificador() {
-            const identificador = document.getElementById('identificador').value;
-
-            fetch(`/validar?identificador=${identificador}`)
+            const identificador = document.getElementById('Identificador').value; // Certifique-se de que o ID está correto e corresponde ao seu input HTML.
+            fetch(`/validar?Identificador=${encodeURIComponent(identificador)}`)
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('resultadoValidacao').innerText = `${data.mensagem}, CPF: ${data.cpf || 'N/A'}` || data.error;
+                    if (data.error) {
+                        document.getElementById('resultadoValidacao').innerText = data.error;
+                    } else {
+                        document.getElementById('resultadoValidacao').innerText = `${data.mensagem}, Nome: ${data.nome || 'N/A'}, CPF: ${data.cpf || 'N/A'}`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('resultadoValidacao').innerText = 'Falha na comunicação com o servidor';
                 });
         }
+
+
     </script>
 </body>
 
