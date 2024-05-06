@@ -1,125 +1,114 @@
-from flask import Flask, request, jsonify, render_template
-from flask_cors import CORS
-import pandas as pd
+
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━❮Bibliotecas❯━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 import os
-import sys
-sys.path.insert(0, 'c:\\Users\\pytho\\Documents\\GitHub\\Certificado')
+import pandas as pd
 
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━❮◆❯━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+from flask import Flask, request, jsonify, render_template
 from werkzeug.utils import secure_filename
-
-
-# Importando as funções dos módulos Data
-from Data.excel_handler import read_excel, write_excel
-from Data.identifier import add_identifiers_to_data
-from Data.validator import validate_certificate
-from Data.excel_handler import read_excel, write_excel
-from Data.identifier import add_identifiers_to_data
-from Data.extXLSX import append_and_overwrite_excel, update_database_with_new_file
+from concatenar_arquivos import concatenar_arquivos_e_atualizar_identificadores
+from Identificador import gerar_identificador  
+from validacao import validate_certificate  
+from flask_cors import CORS
+#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━❮◆❯━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
 
 
-EXCEL_FILE_PATH = r'C:\Users\pytho\Documents\GitHub\Certificado\usuarios.xlsx'
-dataframe = read_excel(EXCEL_FILE_PATH)
-dataframe = add_identifiers_to_data(dataframe)
-# Salvar as alterações de volta para o arquivo Excel
-write_excel(dataframe, EXCEL_FILE_PATH)
 
 
-app = Flask(__name__,template_folder=r'C:\Users\pytho\Documents\GitHub\Certificado\Frontend')
+
+#━━━━━━━━━━━━━❮Variaveis de controle❯━━━━━━━━━━━━━
+
+app = Flask(__name__,template_folder=r'../Frontend/')
 CORS(app)
 
+#━━━━━━━━━━━━━━━━━━━━━━━❮◆❯━━━━━━━━━━━━━━━━━━━━━━━
 
-# O caminho do arquivo Excel, deve ser alterado para o seu caso específico
-EXCEL_FILE_PATH = os.path.join('usuarios.xlsx')
 
-# Carrega os dados do Excel na inicialização do servidor
-dataframe = read_excel(EXCEL_FILE_PATH)
+
+
+#━━━━━━━━━━━━━❮Rotas❯━━━━━━━━━━━━━
+
+
+@app.route('/hello')
+def hello():
+    return "Hello World!"
 
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
+@app.route('/concatenar', methods=['POST'])
+def upload_concatenar():
+    if 'novo_arquivo' not in request.files:
+        return jsonify({'error': 'Nenhum arquivo enviado'}), 400
+    
+    novo_arquivo = request.files['novo_arquivo']
+    pasta_uploads = r'Uploads'
+    if not os.path.exists(pasta_uploads):
+        os.makedirs(pasta_uploads)
+    novo_arquivo_path = os.path.join(pasta_uploads, secure_filename(novo_arquivo.filename))
+    try:
+        novo_arquivo.save(novo_arquivo_path)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    # Supondo que você tem um arquivo existente com o qual você quer concatenar
+    arquivo_existente = os.path.join(pasta_uploads, 'usuarios.xlsx')
+
+    # Chamando a função para concatenar e atualizar identificadores
+    try:
+        arquivo_saida = concatenar_arquivos_e_atualizar_identificadores(arquivo_existente, novo_arquivo_path)
+        return jsonify({'message': 'Arquivos concatenados com sucesso!', 'arquivo': arquivo_saida}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
-
-
-
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return jsonify({"mensagem": "Nenhum arquivo foi enviado."}), 400
-
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"mensagem": "Nenhum arquivo selecionado para upload."}), 400
-
-    if file and file.filename.endswith('.xlsx'):
-        # Define um caminho seguro para salvar o arquivo
-        directory = os.path.join(os.getcwd(), 'uploads')  # Usa a pasta 'uploads' no diretório atual
-        if not os.path.exists(directory):
-            os.makedirs(directory)  # Cria o diretório se não existir
-
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(directory, filename)
-        file.save(filepath)
-        
-        # Atualiza a base de dados
-        try:
-            update_database_with_new_file(filepath)
-            return jsonify({"mensagem": "Arquivo recebido e base de dados atualizada."}), 200
-        except Exception as e:
-            return jsonify({"mensagem": str(e)}), 500
-    else:
-        return jsonify({"mensagem": "Formato de arquivo inválido. Por favor, envie um arquivo .xlsx."}), 400
-
-
-
-
-
-
-
-
-
-@app.route('/buscar_cpf', methods=['GET'])
-def buscar_cpf():
+@app.route('/hash', methods=['GET'])
+def hash_cpf():
     cpf = request.args.get('cpf')
     if not cpf:
-        return jsonify({"erro": "CPF não fornecido"}), 400
-    
-    global dataframe
-    if 'identificador' not in dataframe.columns:
-        return jsonify({"erro": "Identificador não gerado para os registros"}), 500
+        return jsonify({'error': 'CPF não especificado'}), 400
 
-    usuario = dataframe[dataframe['cpf'] == cpf]
-
-    if not usuario.empty:
-        identificador = usuario['identificador'].values[0]
-        return jsonify({"identificador": identificador})
-    else:
-        return jsonify({"mensagem": "CPF não encontrado"}), 404
+    try:
+        hash_result = gerar_identificador(cpf)
+        return jsonify({'cpf': cpf, 'hash': hash_result})
+    except Exception as e:
+        return jsonify({'error': 'Erro ao gerar hash', 'detalhe': str(e)}), 500
 
 
 
-@app.route('/validar_identificador', methods=['GET'])
-def validar_identificador():
-    identificador = request.args.get('identificador')
+@app.route('/validar', methods=['GET'])
+def validar():
+    identificador = request.args.get('Identificador')
     if not identificador:
-        return jsonify({"erro": "Identificador não fornecido"}), 400
+        return jsonify({'error': 'Identificador não especificado'}), 400
     
-    mensagem = validate_certificate(identificador, dataframe)
-    return jsonify({"mensagem": mensagem})
+    try:
+        # Usar um caminho absoluto ou correto para o arquivo Excel
+        base_dir = os.path.dirname(__file__)  # Obter o diretório onde o script está executando
+        file_path = r'Uploads\usuarios.xlsx'
+        
+        # Garantir que o arquivo existe
+        if not os.path.exists(file_path):
+            return jsonify({'error': 'Arquivo não encontrado'}), 404
+        
+        dataframe = pd.read_excel(file_path)
+        resultado, cpf, nome = validate_certificate(identificador, dataframe)
+        return jsonify({'mensagem': resultado, 'cpf': cpf, 'nome': nome})
+    
+    
+    except Exception as e:
+        return jsonify({'error': f'Erro ao validar identificador {str(e)}', 'detalhe': str(e)}), 500
 
-@app.route('/gerar_identificadores', methods=['POST'])
-def gerar_identificadores():
-    global dataframe
-    add_identifiers_to_data(dataframe)
-    
-    # Após adicionar os identificadores, grava no Excel
-    write_excel(dataframe, EXCEL_FILE_PATH)
-    
-    return jsonify({"mensagem": "Identificadores gerados e salvos com sucesso"}), 200
+
+#━━━━━━━━━━━━━━━━━━━━━━━❮◆❯━━━━━━━━━━━━━━━━━━━━━━━
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

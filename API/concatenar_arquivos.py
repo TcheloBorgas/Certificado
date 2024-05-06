@@ -1,5 +1,15 @@
+#━━━━━━━━━━━━━❮Bibliotecas❯━━━━━━━━━━━━━
+
 import pandas as pd
-from has import gerar_identificador
+from Identificador import gerar_identificador
+
+#━━━━━━━━━━━━━━━━━━❮◆❯━━━━━━━━━━━━━━━━━━
+
+
+
+
+
+#━━━━━━━━━━━━━❮Função de Concatenação❯━━━━━━━━━━━━━
 
 def concatenar_arquivos_e_atualizar_identificadores(arquivo_existente, novo_arquivo, arquivo_saida=None):
     # Lê os arquivos Excel

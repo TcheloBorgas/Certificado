@@ -1,5 +1,11 @@
+#━━━━━━━━━━━━━❮Bibliotecas❯━━━━━━━━━━━━━
+
 import pandas as pd
 import hashlib
+#━━━━━━━━━━━━━━━━━━❮◆❯━━━━━━━━━━━━━━━━━━
+
+
+#━━━━━━━━━━━━━❮Funções de Hash❯━━━━━━━━━━━━━
 
 def gerar_identificador(cpf):
     # Cria um hash SHA-256 do CPF
@@ -23,7 +29,9 @@ def atualizar_identificadores_no_excel(caminho_arquivo):
     df.to_excel(novo_caminho_arquivo, index=False)
     return novo_caminho_arquivo
 
-# # Uso da função:
+
+#━━━━━━━━━━━━━❮Exemplo de uso❯━━━━━━━━━━━━━
+
 # caminho_arquivo = 'usuarios_atualizado.xlsx'
 # novo_arquivo = atualizar_identificadores_no_excel(caminho_arquivo)
 # print(f"Arquivo atualizado salvo em: {novo_arquivo}")
