@@ -36,10 +36,11 @@ CORS(app)
 def hello():
     return "Hello World!"
 
-
 @app.route('/')
 def home():
     return render_template('index.html')
+
+
 
 @app.route('/concatenar', methods=['POST'])
 def upload_concatenar():
@@ -47,7 +48,7 @@ def upload_concatenar():
         return jsonify({'error': 'Nenhum arquivo enviado'}), 400
     
     novo_arquivo = request.files['novo_arquivo']
-    pasta_uploads = r'Uploads'
+    pasta_uploads = r'C:\Users\pytho\Documents\GitHub\Certificado\API\Uploads\usuarios.xlsx'
     if not os.path.exists(pasta_uploads):
         os.makedirs(pasta_uploads)
     novo_arquivo_path = os.path.join(pasta_uploads, secure_filename(novo_arquivo.filename))
@@ -90,7 +91,7 @@ def validar():
     try:
         # Usar um caminho absoluto ou correto para o arquivo Excel
         base_dir = os.path.dirname(__file__)  # Obter o diretório onde o script está executando
-        file_path = r'Uploads\usuarios.xlsx'
+        file_path = r'API\Uploads\usuarios.xlsx'
         
         # Garantir que o arquivo existe
         if not os.path.exists(file_path):
