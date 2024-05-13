@@ -2,7 +2,7 @@
 FROM python:3.9
 
 # Definindo o diretório de trabalho no container
-WORKDIR /app
+WORKDIR /app/API/
 
 # Copiando os arquivos Python e o requirements.txt
 COPY . .
