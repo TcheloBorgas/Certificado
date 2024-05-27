@@ -21,7 +21,7 @@ from flask_cors import CORS
 
 #━━━━━━━━━━━━━❮Variaveis de controle❯━━━━━━━━━━━━━
 
-app = Flask(__name__,template_folder=r'../Frontend/')
+app = Flask(__name__,template_folder=r'..\Frontend')
 CORS(app)
 
 #━━━━━━━━━━━━━━━━━━━━━━━❮◆❯━━━━━━━━━━━━━━━━━━━━━━━
@@ -38,7 +38,7 @@ def hello():
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template(r'index.html')
 
 
 
@@ -66,6 +66,8 @@ def upload_concatenar():
         return jsonify({'message': 'Arquivos concatenados com sucesso!', 'arquivo': arquivo_saida}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
 
 
 @app.route('/hash', methods=['GET'])
