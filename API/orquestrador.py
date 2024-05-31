@@ -42,26 +42,33 @@ def hello():
 @app.route('/concatenar', methods=['GET', 'POST'])
 def upload_concatenar():
     if request.method == 'GET':
-        return render_template(r'concatenar.html')
+        return render_template('concatenar.html')
+    
     if 'novo_arquivo' not in request.files:
         return jsonify({'error': 'Nenhum arquivo enviado'}), 400
     
     novo_arquivo = request.files['novo_arquivo']
-    pasta_uploads = r'..\Uploads'
+    base_dir = os.path.dirname(__file__)
+    pasta_uploads = os.path.join(base_dir, 'Uploads')
+    pasta_downloads = os.path.join(base_dir, 'Downloads')
+    
     if not os.path.exists(pasta_uploads):
         os.makedirs(pasta_uploads)
     novo_arquivo_path = os.path.join(pasta_uploads, secure_filename(novo_arquivo.filename))
+    
     try:
         novo_arquivo.save(novo_arquivo_path)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-    # Supondo que você tem um arquivo existente com o qual você quer concatenar
-    arquivo_existente = os.path.join(pasta_uploads, 'usuarios.xlsx')
+    # Supondo que você tem um arquivo existente na pasta Downloads
+    arquivo_existente = os.path.join(pasta_downloads, 'output.xlsx')
 
     # Chamando a função para concatenar e atualizar identificadores
     try:
-        arquivo_saida = concatenar_arquivos(arquivo_existente, novo_arquivo_path)
+        arquivo_saida = concatenar_arquivos(arquivo_existente, novo_arquivo_path, pasta_downloads)
+        os.remove(arquivo_existente)  # Remove o arquivo existente
+        os.remove(novo_arquivo_path)  # Remove o arquivo uploadado pelo usuário
         return jsonify({'message': 'Arquivos concatenados com sucesso!', 'arquivo': arquivo_saida}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -74,47 +81,29 @@ def upload_concatenar():
 
 
 
-# @app.route('/validar', methods=['GET'])
-# def validar():
-#     if request.method == 'GET':
-#         return render_template(r'validador.html')
-    
-#     identificador = request.args.get('Identificador')
-#     if not identificador:
-#         return jsonify({'error': 'Identificador não especificado'}), 400
-    
-#     try:
-#         # Usar um caminho absoluto ou correto para o arquivo Excel
-#         base_dir = os.path.dirname(__file__)  # Obter o diretório onde o script está executando
-#         file_path = r'..\Uploads\usuarios.xlsx'
-        
-#         # Garantir que o arquivo existe
-#         if not os.path.exists(file_path):
-#             return jsonify({'error': 'Arquivo não encontrado'}), 404
-        
-#         dataframe = pd.read_excel(file_path)
-#         resultado, cpf, nome = validate_certificate(identificador, dataframe)
-#         return jsonify({'mensagem': resultado, 'cpf': cpf, 'nome': nome})
-    
-    
-#     except Exception as e:
-#         return jsonify({'error': f'Erro ao validar identificador {str(e)}', 'detalhe': str(e)}), 500
+
 
 @app.route('/validar', methods=['GET'])
 def validar():
     if request.method == 'GET':
         return render_template(r'validador.html')
+    
     identificador = request.args.get('Identificador')
     if not identificador:
         return jsonify({'error': 'Identificador não especificado'}), 400
     
     try:
-        # Caminho absoluto para o arquivo Excel
+        # Caminho para a pasta Downloads
         base_dir = os.path.dirname(__file__)
-        file_path = os.path.join(base_dir, 'uploads', 'usuarios.xlsx')
+        downloads_dir = os.path.join(base_dir, 'Downloads')
         
-        if not os.path.exists(file_path):
+        # Encontrar o arquivo output{x}.xlsx mais recente
+        files = [f for f in os.listdir(downloads_dir) if f.startswith('output') and f.endswith('.xlsx')]
+        if not files:
             return jsonify({'error': 'Arquivo não encontrado'}), 404
+        
+        latest_file = max(files, key=lambda f: int(f[len('output'):-len('.xlsx')]))
+        file_path = os.path.join(downloads_dir, latest_file)
         
         dataframe = pd.read_excel(file_path)
         resultado, cpf, nome = validate_certificate(identificador, dataframe)
