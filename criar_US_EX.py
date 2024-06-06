@@ -35,7 +35,7 @@ for i in range(10):
     usuarios.append([cpf, nome, email, identificador])
 
 # Criar um DataFrame com os dados
-colunas = ['cpf', 'nome', 'email', 'Identificador']
+colunas = ['documento', 'nome', 'email', 'codigo']
 df_usuarios = pd.DataFrame(usuarios, columns=colunas)
 
 # Salvar o DataFrame em uma nova planilha Excel

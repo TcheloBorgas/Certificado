@@ -61,9 +61,15 @@ def upload_concatenar():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-    # Supondo que você tem um arquivo existente na pasta Downloads
-    arquivo_existente = os.path.join(pasta_downloads, 'output.xlsx')
 
+    
+    arquivos = os.listdir(pasta_downloads)
+    arquivo_existente = None
+
+    for file in arquivos:
+        if file.startswith('output'):
+            arquivo_existente = os.path.join(pasta_downloads, file)
+            break
     # Chamando a função para concatenar e atualizar identificadores
     try:
         arquivo_saida = concatenar_arquivos(arquivo_existente, novo_arquivo_path, pasta_downloads)
@@ -79,14 +85,26 @@ def upload_concatenar():
 
 
 
-
-
+# @app.route('/validar', methods=['GET'])
+# def validar():
+#     if 'Identificador' not in request.args:
+#         return render_template('validador.html')
+    
+#     identificador = request.args.get('Identificador')
+#     if not identificador:
+#         return jsonify(error='Identificador não fornecido'), 400
+    
+#     # Implementar a lógica de validação
+#     if identificador == "12345":
+#         return jsonify(mensagem='Identificador válido', nome='Nome Exemplo', cpf='123.456.789-00')
+#     else:
+#         return jsonify(error='Identificador inválido'), 400
 
 
 @app.route('/validar', methods=['GET'])
 def validar():
-    if request.method == 'GET':
-        return render_template(r'validador.html')
+    if 'Identificador' not in request.args:
+        return render_template('validador.html')
     
     identificador = request.args.get('Identificador')
     if not identificador:
@@ -107,7 +125,7 @@ def validar():
         
         dataframe = pd.read_excel(file_path)
         resultado, cpf, nome = validate_certificate(identificador, dataframe)
-        return jsonify({'mensagem': resultado, 'cpf': cpf, 'nome': nome})
+        return jsonify({'mensagem': resultado, 'documento': cpf, 'nome': nome})
     
     except Exception as e:
         return jsonify({'error': f'Erro ao validar identificador: {str(e)}'}), 500
