@@ -85,20 +85,7 @@ def upload_concatenar():
 
 
 
-# @app.route('/validar', methods=['GET'])
-# def validar():
-#     if 'Identificador' not in request.args:
-#         return render_template('validador.html')
-    
-#     identificador = request.args.get('Identificador')
-#     if not identificador:
-#         return jsonify(error='Identificador não fornecido'), 400
-    
-#     # Implementar a lógica de validação
-#     if identificador == "12345":
-#         return jsonify(mensagem='Identificador válido', nome='Nome Exemplo', cpf='123.456.789-00')
-#     else:
-#         return jsonify(error='Identificador inválido'), 400
+
 
 
 @app.route('/validar', methods=['GET'])
