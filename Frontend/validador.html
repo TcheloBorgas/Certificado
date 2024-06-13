@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,14 +10,17 @@
             font-family: Roboto, Helvetica Neue, Arial;
             background: linear-gradient(-90deg, rgba(255, 255, 255, 1) 0%, rgba(188, 224, 255, 1) 100%);
         }
+
         .container {
             width: 450px;
             margin: 0 auto;
             padding: 30px;
         }
+
         h2 {
             color: #2C3D6E;
         }
+
         input {
             border: 1px solid #69727d;
             color: #1f2124;
@@ -28,6 +32,7 @@
             font-size: 16px;
             padding: 11px;
         }
+
         button {
             background: #2C3D6E;
             color: #FFF;
@@ -36,90 +41,105 @@
             padding: 12px 25px;
             cursor: pointer;
         }
+
         button:hover {
             background: #5FA0D9;
         }
-        .message {
-            display: none;
-            padding-top: 10px;
-        }
-        .success-message svg,
-        .error-message svg {
+
+        svg {
             width: 22px;
             float: left;
             margin: 0 5px 0 0;
         }
-        .success-message .st0,
-        .error-message .st1 {
-            fill-rule: evenodd;
-            clip-rule: evenodd;
-        }
-        .success-message .st0 {
-            fill: #2DC96C;
-        }
-        .error-message .st1 {
-            fill: #E81818;
-        }
     </style>
 </head>
+
 <body>
     <div class="container">
+
+        <style>
+            .st0 {
+                fill-rule: evenodd;
+                clip-rule: evenodd;
+                fill: #2DC96C;
+            }
+
+            .st1 {
+                fill-rule: evenodd;
+                clip-rule: evenodd;
+                fill: #E81818;
+            }
+        </style>
+
+        <!-- Validar Identificador -->
         <h2>Validar Certificado</h2>
-        <p>Por favor, digite o código para validar o certificado:</p>
+        <p>Por favor, digite o código para validar o certificado.</p>
         <input type="text" id="Identificador" placeholder="Digite o Identificador">
         <button onclick="validarIdentificador()">Validar</button>
-        <div id="resultadoValidacao">
-            <p class="message success-message">
-                <strong>Certificado validado! </strong>
-                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 30 30" style="enable-background:new 0 0 30 30;" xml:space="preserve">
-                    <path class="st0" d="M11.2,2C13-0.7,17-0.7,18.8,2l0.3,0.4C19.5,2.9,20,3.1,20.6,3l1.3-0.1c3-0.3,5.5,2.2,5.2,5.2L27,9.4 c-0.1,0.6,0.2,1.1,0.6,1.5l0.4,0.3c2.6,1.9,2.6,5.8,0,7.7l-0.4,0.3c-0.5,0.3-0.7,0.9-0.6,1.5l0.1,1.3c0.3,3-2.2,5.5-5.2,5.2L20.6,27 c-0.6-0.1-1.1,0.2-1.5,0.6L18.8,28c-1.9,2.6-5.8,2.6-7.7,0l-0.3-0.4c-0.3-0.5-0.9-0.7-1.5-0.6l-1.3,0.1c-3,0.3-5.5-2.2-5.2-5.2 L3,20.6c0.1-0.6-0.2-1.1-0.6-1.5L2,18.8C-0.7,17-0.7,13,2,11.2l0.4-0.3C2.9,10.5,3.1,10,3,9.4L2.9,8.1c-0.3-3,2.2-5.5,5.2-5.2L9.4,3 c0.6,0.1,1.1-0.2,1.5-0.6L11.2,2z M20.8,10.8c0.6,0.6,0.6,1.6,0,2.2l-6,6c-0.8,0.8-2,0.8-2.8,0l-2.9-2.9c-0.6-0.6-0.6-1.6,0-2.2 c0.6-0.6,1.6-0.6,2.2,0l2,2l5.2-5.2C19.2,10.1,20.2,10.1,20.8,10.8z" />
-                </svg>
-            </p>
-            <p class="message error-message">
-                <strong>Este certificado é inválido. </strong>
-                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 800 800" style="enable-background:new 0 0 800 800;" xml:space="preserve">
-                    <g id="Page-1">
-                        <g id="add" transform="translate(42.666667, 42.666667)">
-                            <path id="error" class="st1" d="M357.3,24c184.1,0,333.3,149.3,333.3,333.3S541.4,690.7,357.3,690.7S24,541.4,24,357.3S173.3,24,357.3,24z M357.3,90.7c-147,0-266.7,119.6-266.7,266.7S210.3,624,357.3,624S624,504.4,624,357.3S504.4,90.7,357.3,90.7z M433.8,233.8l47.1,47.1l-76.4,76.4l76.4,76.4l-47.1,47.1l-76.4-76.4l-76.4,76.4l-47.1-47.1l76.4-76.4l-76.4-76.4l47.1-47.1l76.4,76.4L433.8,233.8z" />
-                        </g>
-                    </g>
-                </svg>
-            </p>
-        </div>
+        <p id="resultadoValidacao"></p>
+
     </div>
+
     <script>
+        function concatenarArquivos() {
+            const formData = new FormData();
+            const novoArquivo = document.getElementById('novoArquivo').files[0];
+            formData.append('novo_arquivo', novoArquivo);
+            fetch('/concatenar', { method: 'POST', body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('resultadoConcatenacao').innerText = data.message || data.error || 'Erro desconhecido';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('resultadoConcatenacao').innerText = 'Falha na comunicação com o servidor';
+                });
+        }
+
         function validarIdentificador() {
             const identificador = document.getElementById('Identificador').value;
             fetch(`/validar?Identificador=${encodeURIComponent(identificador)}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Falha na comunicação com o servidor');
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
-                    console.log('Resposta do servidor:', data);  // Log da resposta
-                    const successMessage = document.querySelector('.success-message');
-                    const errorMessage = document.querySelector('.error-message');
-        
                     if (data.error) {
-                        console.log('Exibindo mensagem de erro:', data.message);  // Adiciona log específico do erro
-                        successMessage.style.display = 'none';
-                        errorMessage.style.display = 'block';
+                        document.getElementById('resultadoValidacao').innerText = data.error;
                     } else {
-                        console.log('Exibindo mensagem de sucesso');
-                        errorMessage.style.display = 'none';
-                        successMessage.style.display = 'block';
+                        const field = document.getElementById('resultadoValidacao');
+
+                        if (data.mensagem == "Certificado válido") {
+                            field.innerHTML = `<strong> ${data.mensagem} </strong>
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 30 30"
+                style="enable-background:new 0 0 30 30;" xml:space="preserve">
+        
+                <path class="st0"
+                    d="M11.2,2C13-0.7,17-0.7,18.8,2l0.3,0.4C19.5,2.9,20,3.1,20.6,3l1.3-0.1c3-0.3,5.5,2.2,5.2,5.2L27,9.4 c-0.1,0.6,0.2,1.1,0.6,1.5l0.4,0.3c2.6,1.9,2.6,5.8,0,7.7l-0.4,0.3c-0.5,0.3-0.7,0.9-0.6,1.5l0.1,1.3c0.3,3-2.2,5.5-5.2,5.2L20.6,27 c-0.6-0.1-1.1,0.2-1.5,0.6L18.8,28c-1.9,2.6-5.8,2.6-7.7,0l-0.3-0.4c-0.3-0.5-0.9-0.7-1.5-0.6l-1.3,0.1c-3,0.3-5.5-2.2-5.2-5.2 L3,20.6c0.1-0.6-0.2-1.1-0.6-1.5L2,18.8C-0.7,17-0.7,13,2,11.2l0.4-0.3C2.9,10.5,3.1,10,3,9.4L2.9,8.1c-0.3-3,2.2-5.5,5.2-5.2L9.4,3 c0.6,0.1,1.1-0.2,1.5-0.6L11.2,2z M20.8,10.8c0.6,0.6,0.6,1.6,0,2.2l-6,6c-0.8,0.8-2,0.8-2.8,0l-2.9-2.9c-0.6-0.6-0.6-1.6,0-2.2 c0.6-0.6,1.6-0.6,2.2,0l2,2l5.2-5.2C19.2,10.1,20.2,10.1,20.8,10.8z" />
+            </svg> `
+                        } else if(data.mensagem == "Certificado inválido"){
+                            field.innerHTML = `<strong> ${data.mensagem} </strong>
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 800 800"
+                style="enable-background:new 0 0 800 800;" xml:space="preserve">
+
+                <g id="Page-1">
+                    <g id="add" transform="translate(42.666667, 42.666667)">
+                        <path id="error" class="st1" d="M357.3,24c184.1,0,333.3,149.3,333.3,333.3S541.4,690.7,357.3,690.7S24,541.4,24,357.3
+			S173.3,24,357.3,24z M357.3,90.7c-147,0-266.7,119.6-266.7,266.7S210.3,624,357.3,624S624,504.4,624,357.3S504.4,90.7,357.3,90.7z
+			 M433.8,233.8l47.1,47.1l-76.4,76.4l76.4,76.4l-47.1,47.1l-76.4-76.4l-76.4,76.4l-47.1-47.1l76.4-76.4l-76.4-76.4l47.1-47.1
+			l76.4,76.4L433.8,233.8z" />
+                    </g>
+                </g>
+            </svg>`
+                        }
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    document.querySelector('.error-message').innerText = 'Erro ao processar a validação. Por favor, tente novamente mais tarde.';
-                    document.querySelector('.success-message').style.display = 'none';
-                    document.querySelector('.error-message').style.display = 'block';
+                    document.getElementById('resultadoValidacao').innerText = 'Falha na comunicação com o servidor';
                 });
         }
-        
     </script>
 </body>
+
 </html>
+```
